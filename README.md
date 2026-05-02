@@ -258,19 +258,20 @@ ESP32 DevKit                    Componentes
 | | MTU muy pequeño | Configurar MTU=500 en ESP32 |
 ## 🚧 Próximos Pasos (Roadmap)
 
-- [ ] **Aplicación Flutter** - Interfaz intuitiva para iOS/Android
-  - [ ] Pantalla principal con modelo 3D del cráneo
-  - [ ] Selector visual de huesos (tocar el hueso en el modelo 3D)
-  - [ ] Control deslizante para la mandíbula
+✅ **Aplicación Flutter** - Interfaz intuitiva para iOS/Android
+  - ✅ Pantalla principal con modelo 3D del cráneo
+  - ✅ Selector visual de huesos (tocar el hueso en el modelo 3D)
+  - ✅ Control deslizante para la mandíbula
   - [ ] Modo oscuro/claro
 - [ ] **Efectos de iluminación** - Secuencias y animaciones
   - [ ] Modo "Rainbow" (efecto arcoíris cíclico)
   - [ ] Modo "Respiración" (fade in/out)
   - [ ] Modo "Latido" (pulso sincronizado)
   - [ ] Secuencias personalizables por el usuario
-- [ ] **Modo educativo** - Información anatómica
-  - [ ] Descripción de cada hueso al seleccionarlo
-  - [ ] Datos curiosos sobre anatomía craneal
+
+✅ **Modo educativo** - Información anatómica
+  - ✅ Descripción de cada hueso al seleccionarlo
+  - ✅ Datos curiosos sobre anatomía craneal
   - [ ] Quiz interactivo para aprender los huesos
   - [ ] Soporte multilenguaje (ES, EN, PT)
 - [ ] **Control por voz** - Integración con asistentes
