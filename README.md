@@ -12,7 +12,7 @@
 | Campo | Información |
 |-------|-------------|
 | **Autor** | Rodrigo C.C. |
-| **Versión** | 1.0.0 |
+| **Versión** | 1.0.1 |
 | **Fecha** | Abril 2026 |
 | **Framework** | ESP-IDF v6.0 |
 | **Plataforma** | ESP32 |

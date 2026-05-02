@@ -37,7 +37,7 @@ static void ble_command_handler(uint8_t comando, uint8_t valor)
         }
         break;
     case 0x02:
-        if (valor >= 1 && valor <= 180)
+        if (valor <= 180)
         {
             ESP_LOGI(TAG_CRANEO, "📱 Recibido: Mover mandíbula a %d°", valor);
             control_angulo_servo(valor);
@@ -61,10 +61,10 @@ void app_main(void)
     esp_err_t err_init = led_ws2812_init();
     if (err_init != ESP_OK)
     {
-        ESP_LOGE(TAG_CRANEO, "Error al inicializar");
+        ESP_LOGE(TAG_CRANEO, "Error al inicializar LEDs");
         return;
     }
-    ESP_LOGI(TAG_CRANEO, "Inicializacion exitosa!!");
+    ESP_LOGI(TAG_CRANEO, "Inicializacion LEDs exitosa!!");
 
     //  Inicializacion del serovo de manibula
     esp_err_t err_init_servo = mandibula_servo_init();

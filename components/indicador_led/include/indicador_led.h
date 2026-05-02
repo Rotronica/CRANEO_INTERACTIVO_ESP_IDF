@@ -107,6 +107,12 @@ extern "C"
      */
     void indicador_led_encender_hueso(uint8_t hueso);
 
+    /**
+     * @brief Modo indicador de conexión exitosa - Verde fijo
+     * @param[in] activar true para iniciar modo, false para detener
+     */
+    void indicador_modo_conectado(bool activar);
+    void indicador_modo_desconectado(bool activar);
 //==============================================================================
 // FINALIZACIÓN
 //==============================================================================

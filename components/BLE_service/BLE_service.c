@@ -31,6 +31,7 @@
 #include "esp_gap_ble_api.h"     // GAP: Advertising, conexiones, escaneo
 #include "esp_gatts_api.h"       // GATT Server: creación de servicios y características
 #include "esp_gatt_common_api.h" // Tipos comunes: permisos, propiedades, etc.
+#include "indicador_led.h"
 
 // =============================================================================
 // CONSTANTES PRIVADAS
@@ -330,6 +331,8 @@ static void craneo_gatts_profile_event_handler(esp_gatts_cb_event_t event,
         ESP_LOGI(TAG, "Cliente conectado, conn_id: %d, remote: " ESP_BD_ADDR_STR,
                  p->conn_id, ESP_BD_ADDR_HEX(param->connect.remote_bda));
 
+        // 🟢 CAMBIO: Indicar conexión exitosa (verde fijo)
+        indicador_modo_conectado(true);
         // Actualizar parámetros de conexión para mejor latencia
         // Esto optimiza la velocidad de transmisión de datos
         esp_ble_conn_update_params_t conn_params = {0};
@@ -348,6 +351,8 @@ static void craneo_gatts_profile_event_handler(esp_gatts_cb_event_t event,
     case ESP_GATTS_DISCONNECT_EVT:
         p->connected = false; // Marcar como desconectado
         ESP_LOGI(TAG, "Cliente desconectado, razón: 0x%02x", param->disconnect.reason);
+        ESP_LOGI(TAG, "Leds y servo apagados");
+        indicador_modo_desconectado(true); // Apaga los leds y el servo
 
         // Reiniciar el advertising para que otros dispositivos puedan conectarse
         esp_ble_gap_start_advertising(&adv_params);

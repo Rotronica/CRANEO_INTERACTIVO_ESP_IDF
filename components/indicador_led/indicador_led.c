@@ -1,11 +1,17 @@
 #include <stdio.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include "indicador_led.h"
 #include "led_strip.h"
+#include "servo_mandibula.h"
 
 #define SALIDA_WS2812 GPIO_NUM_4 // Salida GPIO para LEDS WS2812
-
+#define INDICADOR_BLE_ON 0       // Es el numero del led el cual se encendera para el indicador de conexion BLE
+#define MAX_LEDS_CONECT 12
 static const char *TAG = "LED_WS2812";
 static led_strip_handle_t led_strip = NULL;
+static bool modo_indicador_activo = false; // Variable para el indicador de conexion con el ble
+
 // Definición del array de nombres (se guarda en FLASH con const)
 const char *NOMBRE_HUESOS[] = {
     [0] = "INVÁLIDO",
@@ -58,12 +64,14 @@ static const color_rgb_t HUESO_COLORS[] = {
     [HUESO_VOMER] = {255, 248, 220},                // Blanco hueso
 };
 
+void indicador_modo_normal(void);
+
 esp_err_t led_ws2812_init(void)
 {
     // Configuración completa del LED strip (siguiendo la documentación)
     led_strip_config_t strip_config = {
         .strip_gpio_num = SALIDA_WS2812,
-        .max_leds = 22,                                              // 22 huesos del cráneo
+        .max_leds = MAX_LEDS_CONECT,                                 // 22 huesos del cráneo
         .led_model = LED_MODEL_WS2812,                               // ← OBLIGATORIO: define temporización
         .color_component_format = LED_STRIP_COLOR_COMPONENT_FMT_GRB, // ← OBLIGATORIO: WS2812 usa GRB
         .flags = {
@@ -91,16 +99,16 @@ esp_err_t led_ws2812_init(void)
     led_strip_clear(led_strip);
     led_strip_refresh(led_strip);
 
-    ESP_LOGI(TAG, "LED Strip configurado para: %d LEDs", 22);
+    ESP_LOGI(TAG, "LED Strip configurado para: %d LEDs", MAX_LEDS_CONECT);
     return ESP_OK;
 }
 
 void indicador_led_encender_hueso(uint8_t hueso)
 {
-    uint8_t indice = hueso - 1; //este es el indice para el led el cual encendera led por led
+    uint8_t indice = hueso - 1; // este es el indice para el led el cual encendera led por led
     uint8_t r, g, b;
 
-    // led_strip_clear(led_strip); // ← ¡CRÍTICO! Apaga todo antes de encender el nuevo
+    led_strip_clear(led_strip); // ← ¡CRÍTICO! Apaga todo antes de encender el nuevo
 
     if (hueso >= 1 && hueso <= TOTAL_HUESOS)
     {
@@ -119,4 +127,44 @@ void indicador_led_encender_hueso(uint8_t hueso)
     led_strip_refresh(led_strip);
 
     ESP_LOGI(TAG, "Hueso %d encendido - Color RGB(%d,%d,%d)", hueso, r, g, b);
+}
+void indicador_modo_conectado(bool activar)
+{
+    if (activar)
+    {
+        // Detener modo buscando
+        modo_indicador_activo = false;
+        led_strip_clear(led_strip); // Apagar todo los leds
+        control_angulo_servo(0);    // Inicializamos el angulo del servo en 0 grados
+
+        // Encender LED indicador en verde fijo
+        led_strip_set_pixel(led_strip, INDICADOR_BLE_ON, 0, 255, 0); // Verde
+        led_strip_refresh(led_strip);
+
+        ESP_LOGI(TAG, "Modo CONECTADO activado - LED indicador verde fijo");
+
+        // Esperar 2 segundos y luego apagar para modo normal
+        vTaskDelay(pdMS_TO_TICKS(2000));
+        indicador_modo_normal();
+    }
+}
+void indicador_modo_desconectado(bool activar)
+{
+    if (activar)
+    {
+        ESP_LOGI(TAG, "LLamada a modo desconexion bluetooth");
+        led_strip_clear(led_strip); // Apagar todo los leds
+        control_angulo_servo(0);    // Inicializamos el angulo del servo en 0 grados
+    }
+}
+void indicador_modo_normal(void)
+{
+    // Detener modo indicador
+    modo_indicador_activo = false;
+
+    // Apagar solo el LED indicador (no todos los LEDs)
+    led_strip_set_pixel(led_strip, INDICADOR_BLE_ON, 0, 0, 0);
+    led_strip_refresh(led_strip);
+
+    ESP_LOGI(TAG, "Modo NORMAL activado - LED indicador apagado");
 }
